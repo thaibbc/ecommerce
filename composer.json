@@ -1,0 +1,22 @@
+{
+  "name": "phuc_admin/ecommerce",
+  "description": "Du an web ban hang",
+  "autoload": {
+    "psr-4": {
+      "TanAdmin\\QuizOnline\\": [
+        "vender/"
+      ]
+    }
+  },
+  "authors": [
+    {
+      "name": "vuphuc129",
+      "email": "vuphuc129@gmail.com"
+    }
+  ],
+  "require": {
+    "phpmailer/phpmailer": "^6.8",
+    "cloudinary/cloudinary_php": "^2",
+    "tecnickcom/tcpdf": "^6.6"
+  }
+}
