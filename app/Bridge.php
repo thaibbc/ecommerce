@@ -29,7 +29,7 @@ require_once './app/core/Cookie.php';
 Session::init();
 
 // Load thu vien
-require 'vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 
 //AutoloadFile config 
