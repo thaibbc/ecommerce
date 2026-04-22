@@ -82,7 +82,7 @@ class App
             }
 
             require_once './app/controllers/' . $urlCheck . '.php';
-            $controllerInstance = new $this->controller();
+            $controllerInstance = new (ucfirst($this->controller))();
 
             //Share db cho controller
             if (!empty($this->__DBShare)) {

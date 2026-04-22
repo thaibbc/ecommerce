@@ -24,6 +24,20 @@ $routes['reset-password'] = 'account/resetPassword';
 $routes['strongPassword'] = 'account/checkStrongPasswordApi';
 $routes['isIdenti'] = 'account/checkIdentificateExistedApi';
 
+// Cart API
+$routes['cart/getAllCartApi'] = 'cart/getAllCartApi';
+$routes['cart/addCartApi'] = 'cart/addCartApi';
+
+// Wishlist API
+$routes['wishList/getAllWishListApi'] = 'wishlist/getAllWishlistApi';
+
+// Admin Statistical API
+$routes['admin/statistical/amountStatistical'] = 'admin/statistical/amountStatistical';
+$routes['admin/statistical/getProdForCateChart'] = 'admin/statistical/getProdForCateChart';
+
+// Account API
+$routes['account/forgotPasswordApi'] = 'account/forgotPasswordApi';
+
 $routes['my-account'] = 'account/default';
 $routes['my-order'] = 'account/order';
 $routes['order-detail/(.+)'] = 'account/orderDetail/$1';
