@@ -202,6 +202,7 @@ class Product extends Controller
                         'price' => $item['price'],
                         'quantity' => $item['quantity'],
                         'discount' => $item['discount'],
+                        'image' => $item['image'] ?? '',
                         'attribute_id' => $item['attribute_id'],
                         'display_name' => $item['display_name'],
                         'attribute_values' => [$item['attribute_value']],

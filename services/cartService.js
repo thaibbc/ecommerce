@@ -1,8 +1,8 @@
 // cart
 const notCartHtml = () => {
   return `<div class="text-center">
-            <img class="img-fluid" src="https://www.maytinhtrangbom.vn/client/theme/image/emptycart.webp" alt="Chưa có sản phẩm img">
-            <p >Chưa có sản phẩm.</p>
+            <img class="img-fluid" src="public/client/images/icons/empty_cart.png" alt="Chưa có sản phẩm" style="max-width: 150px; margin-bottom: 15px;">
+            <p>Chưa có sản phẩm.</p>
           </div>`;
 };
 

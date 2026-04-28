@@ -1,14 +1,10 @@
 <?php
 $config['bank'] = [
     'vnpay' => [
-        'vnp_TmnCode' => '52T9GBL6',
-        'vnp_HashSecret' => '5JXOLG7TIHAPCCGCYNYPGB5K084H0B9L',
+        'vnp_TmnCode' => 'XJK20BXY',
+        'vnp_HashSecret' => 'UEI5VLO54ZMQP553H6D35OKVQ1Q6AJ5J',
     ],
-    'momo' => [
-        "partner_code" => "MOMOBKUN20180529",
-        "access_key" => "klm05TvNBzhg7h7j",
-        "secret_key" => "at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa"
-    ],
+
     'onepay' => [
         "merchant_id" => "TESTONEPAY",
         "access_code" => "6BEB2546",

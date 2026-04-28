@@ -139,7 +139,7 @@ class ProductModel extends BaseModel
 
     function getAllProdVariants($id)
     {
-        $sql = "SELECT pv.id, pv.price, pv.quantity, pv.discount, p.title, a.id AS attribute_id, a.display_name, av.value_name AS attribute_value
+        $sql = "SELECT pv.id, pv.image, pv.price, pv.quantity, pv.discount, p.title, a.id AS attribute_id, a.display_name, av.value_name AS attribute_value
         FROM product_variants pv
         JOIN variants_value vv ON pv.id = vv.product_variant_id
         JOIN attribute a ON vv.attribute_id = a.id
@@ -153,7 +153,7 @@ class ProductModel extends BaseModel
 
     function getAllVariants()
     {
-        $sql = "SELECT pv.id, pv.price, pv.quantity, pv.discount, p.title, a.id AS attribute_id, a.display_name, av.value_name AS attribute_value
+        $sql = "SELECT pv.id, pv.image, pv.price, pv.quantity, pv.discount, p.title, a.id AS attribute_id, a.display_name, av.value_name AS attribute_value
         FROM product_variants pv
         JOIN variants_value vv ON pv.id = vv.product_variant_id
         JOIN attribute a ON vv.attribute_id = a.id
@@ -168,7 +168,7 @@ class ProductModel extends BaseModel
     function getOneProdVariant($variantId)
     {
 
-        $sql = "SELECT pv.id AS product_variant_id, p.id AS prod_id, pv.quantity as variant_quantity, p.quantity AS product_quantity, p.sold
+        $sql = "SELECT pv.id AS product_variant_id, pv.image, p.id AS prod_id, pv.quantity as variant_quantity, p.quantity AS product_quantity, p.sold
         FROM product_variants pv
         JOIN product p ON pv.prod_id = p.id
         WHERE pv.id = $variantId

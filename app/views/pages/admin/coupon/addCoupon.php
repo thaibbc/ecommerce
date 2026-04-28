@@ -27,13 +27,13 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-check">
-                                    <input class="form-check-input" value="1" id="public" type="radio" name="status" checked>
+                                    <input class="form-check-input" value="1" id="public" type="radio" name="status" <?= !isset($dataValueOld['status']) || $dataValueOld['status'] == 1 ? 'checked' : '' ?>>
                                     <label for="public" class="form-check-label">
                                         Công khai
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" value="0" id="hidden" type="radio" name="status">
+                                    <input class="form-check-input" value="0" id="hidden" type="radio" name="status" <?= isset($dataValueOld['status']) && $dataValueOld['status'] == 0 ? 'checked' : '' ?>>
                                     <label for="hidden" class="form-check-label">
                                         Không công khai
                                     </label>

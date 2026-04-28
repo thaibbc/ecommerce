@@ -112,7 +112,7 @@ class Coupon extends Controller
             'min_amount' => $dataPost['min_amount'],
             'quantity' => $dataPost['quantity'],
             'expired' => $dataPost['expired'],
-            'status' => strtotime($dataPost['expired']) > time() ? 1 : 0,
+            'status' => $dataPost['status'] ?? 0,
         ];
 
         //  validate Upload image thumb
@@ -200,7 +200,7 @@ class Coupon extends Controller
             'min_amount' => $dataPost['min_amount'],
             'quantity' => $dataPost['quantity'],
             'expired' => $dataPost['expired'],
-            'status' => strtotime($dataPost['expired']) > time() ? 1 : 0,
+            'status' => $dataPost['status'] ?? 0,
         ];
 
         if (!empty($thumb['name'])) {

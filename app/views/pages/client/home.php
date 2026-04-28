@@ -1,13 +1,13 @@
     <!-- Category Sidebar start -->
     <div class="ec-side-cat-overlay"></div>
-    <div class="col-lg-3 category-sidebar" data-animation="fadeIn">
+    <div class="col-lg-3 category-sidebar">
         <div class="cat-sidebar">
             <div class="cat-sidebar-box">
                 <div class="ec-sidebar-wrap">
                     <!-- Sidebar Category Block -->
                     <div class="ec-sidebar-block">
                         <div class="ec-sb-title">
-                            <h3 class="ec-sidebar-title">Danh mục<button class="ec-close">×</button></h3>
+                            <h3 class="ec-sidebar-title">Danh mục<button class="ec-close" onclick="$('.category-sidebar').removeClass('ec-open'); $('.ec-side-cat-overlay').fadeOut();">×</button></h3>
                         </div>
                         <?php
                         foreach ($dataCate as $cate) {

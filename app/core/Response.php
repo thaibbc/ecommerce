@@ -9,6 +9,7 @@
 
     function dataApi($code, $mess, $data = [])
     {
+        header('Content-Type: application/json');
         $data = [
             'code' => $code,
             'message' => $mess,

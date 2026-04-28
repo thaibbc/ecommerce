@@ -86,6 +86,15 @@ const getVariant = (id) => {
         $('#product_variant_id').val(id);
         productPrice.empty();
         productPrice.append(priceHtml(dataProd));
+
+        if (dataProd.image && dataProd.image.trim() !== '') {
+          var activeImg = $('.single-product-cover .slick-active img');
+          if (activeImg.length > 0) {
+              activeImg.attr('src', dataProd.image);
+          } else {
+              $('.single-product-cover .single-slide img').first().attr('src', dataProd.image);
+          }
+        }
       }
 
       if (data.code == 400) {

@@ -121,7 +121,14 @@
 
                                     <h4 class="mb-2 mt-3 ">Phương thức thanh toán</h4>
                                     <ul class="order-details">
-                                        <li><?= $payment_method_name ?></li>
+                                        <li>
+                                            <?= $payment_method_name ?>
+                                            <?php if($dataOrder[0]['payment_transaction_id'] > 0 || $dataOrder[0]['total_money'] <= 0): ?>
+                                                <span class="badge bg-success ms-2 text-white" style="padding: 5px 8px; font-size: 11px;">Đã thanh toán trước</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-warning ms-2 text-dark" style="padding: 5px 8px; font-size: 11px;">Chưa thanh toán</span>
+                                            <?php endif; ?>
+                                        </li>
                                     </ul>
 
                                     <div class="payment-mode">

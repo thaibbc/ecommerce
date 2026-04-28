@@ -176,7 +176,7 @@ class Checkout extends Controller
             $dataCoupon = $this->couponModel->getOneCouponCode($dataPost['coupon_code']);
             // Kiem tra ma giam gia co hop le hay khong
 
-            if (empty($dataCoupon) || $dataCoupon['min_amount'] > $totalPrice || strtotime($dataCoupon['expired']) < time() || $dataCoupon['quantity'] == 0 || $dataCoupon['status'] == 0) {
+            if (empty($dataCoupon) || $dataCoupon['min_amount'] > $totalPrice || strtotime($dataCoupon['expired']) < time() || $dataCoupon['quantity'] == 0) {
                 return $this->res->setToastSession('error', 'Vui lòng kiểm tra lại mã giảm giá.', 'checkout');
             }
 
@@ -189,6 +189,7 @@ class Checkout extends Controller
             } else {
                 $totalPrice -= $dataCoupon['value'];
             }
+            $totalPrice = max(0, $totalPrice);
 
             $dataInsertOrder['coupon_id'] = $dataCoupon['id'];
             $dataInsertOrder['total_money'] = $totalPrice;
@@ -199,13 +200,21 @@ class Checkout extends Controller
         $paymentMethodArr = explode('-', $dataPost['payment_method']);
         $payment_method_id = reset($paymentMethodArr);
 
+        // Nếu tổng tiền = 0 (do mã giảm 100%), tự động hoàn tất đơn hàng như COD
+        if ($dataInsertOrder['total_money'] <= 0) {
+            Logger::log("Order {$dataInsertOrder['order_code']} - Tổng tiền = 0, tự động hoàn tất", "info");
+            return $this->handlePaymentMethod($dataInsertOrder, $dataCartNew, $payment_method_id);
+        }
+
         //Thanh toan khi nhan hang
         if (trim(end($paymentMethodArr)) == 'cash_on_delivery') {
+            Logger::log("Order {$dataInsertOrder['order_code']} - Chọn thanh toán COD", "info");
             return $this->handlePaymentMethod($dataInsertOrder, $dataCartNew, $payment_method_id);
         }
 
         // Thanh toan khi dung vnpay
         if (trim(end($paymentMethodArr)) == 'vnpay') {
+            Logger::log("Order {$dataInsertOrder['order_code']} - Bắt đầu tạo yêu cầu thanh toán VNPAY", "info", ['amount' => $dataInsertOrder['total_money']]);
 
             $dataOrderTemp = [
                 'payment_method_id' => $payment_method_id,
@@ -220,39 +229,19 @@ class Checkout extends Controller
 
 
             if (!empty($bankUrl)) {
+                Logger::log("Order {$dataInsertOrder['order_code']} - Chuyển hướng sang VNPAY thành công", "success", ['url' => $bankUrl]);
                 //Set tam vao data vao cookie
                 Cookie::set('dataOrderTemp', json_encode($dataOrderTemp));
                 header('location: ' . $bankUrl);
                 return;
             }
-
+            
+            Logger::log("Order {$dataInsertOrder['order_code']} - Lỗi tạo URL thanh toán VNPAY", "error");
             return $this->res->setToastSession('error', 'Phương thức thanh toán lỗi vui lòng thử lại.', 'home');
         }
 
 
-        // Thanh toan khi dung momo
-        if (trim(end($paymentMethodArr)) == 'momo') {
 
-            $dataOrderTemp = [
-                'payment_method_id' => $payment_method_id,
-                'dataInsertOrder' => $dataInsertOrder,
-                'dataCartNew' => $dataCartNew,
-            ];
-
-            $bankUrl = Services::generateMomoUrl([
-                'amount' => $dataInsertOrder['total_money'],
-                'order_code' => $dataInsertOrder['order_code'],
-            ]);
-
-
-            if (!empty($bankUrl)) {
-                //Set tam vao data vao cookie
-                Cookie::set('dataOrderTemp', json_encode($dataOrderTemp));
-                header('location: ' . $bankUrl);
-                return;
-            }
-            return $this->res->setToastSession('error', 'Phương thức thanh toán lỗi vui lòng thử lại.', 'home');
-        }
     }
     private function handlePaymentMethod($dataInsertOrder, $dataCartNew, $payment_method_id, $dataGet = [])
     {
@@ -309,24 +298,7 @@ class Checkout extends Controller
                 $payment_transaction_id = $this->db->lastInsertId();
             }
 
-            // MOMO
 
-            if ($dataGet['orderInfo'] == 'momo_payment') {
-
-                $createPaymentTransactions = $this->paymentModel->addNewPaymentTransactions([
-                    'bankCode' => 'SML',
-                    'bankTranNo' => $dataGet['transId'],
-                    'cardType' => $dataGet['payType'],
-                    'payDate' => strtotime($dataGet['responseTime']) ?? time(),
-                    'transactionNo' => $dataGet['transId'],
-                    'secureHash' => $dataGet['signature'],
-                ]);
-                if (!$createPaymentTransactions) {
-                    return $this->res->setToastSession('error', 'Đặt hàng thất bại vui lòng thử lại.', 'checkout');
-                }
-
-                $payment_transaction_id = $this->db->lastInsertId();
-            }
 
             // ZALOPAY
         }
@@ -366,6 +338,7 @@ class Checkout extends Controller
     {
         $dataOrderTemp = json_decode(Cookie::get('dataOrderTemp'), 1);
         if (empty($dataOrderTemp)) {
+            Logger::log("paymentFinal - Lỗi: Không tìm thấy dữ liệu Cookie dataOrderTemp", "error");
             return $this->res->redirect('home');
         }
         $dataGet = $this->req->getFields();
@@ -374,20 +347,21 @@ class Checkout extends Controller
         $dataInsertOrder = $dataOrderTemp['dataInsertOrder'];
         $dataCartNew = $dataOrderTemp['dataCartNew'];
         $payment_method_id = $dataOrderTemp['payment_method_id'];
-
+        
+        Logger::log("paymentFinal - Nhận IPN/Callback cho order {$dataInsertOrder['order_code']}", "info", $dataGet);
 
         //Kiem tra do la hinh thuc thanh toan nao
 
         //Thanh toan vnpay
-        if (isset($dataGet['vnp_OrderInfo']) && $dataGet['vnp_OrderInfo'] == 'vnpay_payment' && $dataGet['vnp_ResponseCode'] == '00' && $dataGet['vnp_TransactionStatus'] == '00') {
-            return $this->handlePaymentMethod($dataInsertOrder, $dataCartNew, $payment_method_id, $dataGet);
+        if (isset($dataGet['vnp_OrderInfo'])) {
+            if ($dataGet['vnp_ResponseCode'] == '00' && $dataGet['vnp_TransactionStatus'] == '00') {
+                Logger::log("paymentFinal - VNPAY giao dịch thành công cho order {$dataInsertOrder['order_code']}", "success");
+                return $this->handlePaymentMethod($dataInsertOrder, $dataCartNew, $payment_method_id, $dataGet);
+            } else {
+                Logger::log("paymentFinal - VNPAY giao dịch thất bại cho order {$dataInsertOrder['order_code']}. ResponseCode: {$dataGet['vnp_ResponseCode']}", "error");
+            }
         }
 
-        // Thanh toan momo
-
-        if (isset($dataGet['orderInfo']) == 'momo_payment' && $dataGet['errorCode'] == '0') {
-            return $this->handlePaymentMethod($dataInsertOrder, $dataCartNew, $payment_method_id, $dataGet);
-        }
 
         // Thanh toan zalopay
 

@@ -75,12 +75,11 @@
                                         </div>
                                         <div>
                                             <span class="text-left">Phiếu giảm giá</span>
-                                            <span class="text-right"><a class="ec-checkout-coupan">Áp dụng mã giảm giá</a></span>
+                                            <span class="text-right"><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#couponModal" style="color: #3474d4; font-weight: bold; cursor:pointer;">Chọn mã giảm giá</a></span>
                                         </div>
-                                        <div class="ec-checkout-coupan-content">
-                                            <div class="ec-checkout-coupan-form" name="ec-checkout-coupan-form" method="post" action="#">
-                                                <input id="coupon_code" name="coupon_code" class="ec-coupan" type="text" placeholder="Nhập mã phiếu giảm giá của bạn">
-                                                <button onclick="updateProductCoupon(<?= $dataCart[0]['totalPrice'] ?>)" class="ec-coupan-btn button btn-primary" type="button">Apply</button>
+                                        <div class="ec-checkout-coupan-content" style="display: block; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                                            <div class="ec-checkout-coupan-form">
+                                                <input id="coupon_code" name="coupon_code" class="ec-coupan" type="text" placeholder="Mã giảm giá đang chọn" readonly style="background-color: #f9f9f9; width: 100%; border: 1px solid #ccc; padding: 5px 10px;">
                                             </div>
                                         </div>
                                         <div class="ec-checkout-summary-total">
@@ -233,3 +232,64 @@
 
     </form>
 </div>
+
+<!-- Modal for Coupons -->
+<div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="couponModalLabel">Chọn mã giảm giá</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-4">
+          <input type="text" id="couponSearchInput" class="form-control" placeholder="Nhập mã ưu đãi..." style="border: 1px solid #ccc; padding: 10px;">
+          <button class="btn btn-primary" type="button" onclick="applyModalCoupon(<?= $dataCart[0]['totalPrice'] ?? 0 ?>)">Áp dụng</button>
+        </div>
+        <div class="coupon-list">
+          <h6 class="mb-3">Mã giảm giá khả dụng</h6>
+          <?php 
+          $hasCoupon = false;
+          foreach ($dataCoupon as $coupon): ?>
+            <?php if ($coupon['status'] == 1 && strtotime($coupon['expired']) > time() && $coupon['quantity'] > 0 && $coupon['min_amount'] <= ($dataCart[0]['totalPrice'] ?? 0)): 
+              $hasCoupon = true;
+            ?>
+            <div class="card mb-3 coupon-item shadow-sm" style="border: 1px solid #e1e1e1;">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1" style="color: #3474d4;"><strong><?= $coupon['code'] ?></strong></h6>
+                  <p class="mb-1 text-muted" style="font-size: 13px;"><?= $coupon['title'] ?></p>
+                  <small class="text-danger"><i class="fa fa-clock-o"></i> HSD: <?= date('d/m/Y', strtotime($coupon['expired'])) ?></small>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary px-3" onclick="selectAndApplyCoupon('<?= $coupon['code'] ?>', <?= $dataCart[0]['totalPrice'] ?? 0 ?>)">Chọn</button>
+              </div>
+            </div>
+            <?php endif; ?>
+          <?php endforeach; 
+          if(!$hasCoupon): ?>
+            <p class="text-muted text-center mt-4">Không có mã giảm giá nào phù hợp cho đơn hàng của bạn.</p>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function applyModalCoupon(totalPrice) {
+        const code = document.getElementById('couponSearchInput').value.trim();
+        if(code) {
+            document.getElementById('coupon_code').value = code;
+            updateProductCoupon(totalPrice);
+            $('#couponModal').modal('hide');
+        } else {
+            showToast('error', 'Vui lòng nhập mã giảm giá');
+        }
+    }
+
+    function selectAndApplyCoupon(code, totalPrice) {
+        document.getElementById('coupon_code').value = code;
+        updateProductCoupon(totalPrice);
+        $('#couponModal').modal('hide');
+    }
+</script>

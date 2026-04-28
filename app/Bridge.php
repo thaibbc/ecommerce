@@ -2,12 +2,15 @@
 define('_DIR_ROOT', __DIR__);
 //set lai gio VN
 date_default_timezone_set('Asia/Ho_Chi_Minh');
+ini_set('display_errors', 0);
+error_reporting(0);
 
 
 //Handle http root
-if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || 
+    (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) {
     $host = $_SERVER['HTTP_HOST'];
-    if (strpos($host, ':') === false && $_SERVER['SERVER_PORT'] != 443) {
+    if (strpos($host, ':') === false && $_SERVER['SERVER_PORT'] != 443 && empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
         $host .= ':' . $_SERVER['SERVER_PORT'];
     }
     $web_root = 'https://' . $host;

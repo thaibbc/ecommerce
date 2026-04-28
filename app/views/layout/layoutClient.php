@@ -38,11 +38,14 @@
 
     <link rel="stylesheet" href="public/client/css/demo1.css" />
     <link rel="stylesheet" href="public/client/css/style.css" />
-    <link rel="stylesheet" href="public/client/css/custom.css" />
+    <link rel="stylesheet" href="public/client/css/custom.css?v=<?= time() ?>" />
     <link rel="stylesheet" href="public/client/css/responsive.css" />
 
     <!-- Background css -->
     <link rel="stylesheet" id="bg-switcher-css" href="public/client/css/backgrounds/bg-4.css">
+    
+    <!-- Chatbot CSS -->
+    <link rel="stylesheet" href="public/client/css/custom-chatbot.css">
 
     <!-- Swal -->
     <script src="public/includes/js/sweetalert2.all.min.js"></script>
@@ -107,7 +110,7 @@
     <!-- Services -->
     <script src="services/base.js?v=<?= time() ?>"></script>
     <script src="services/productService.js"></script>
-    <script src="services/cartService.js"></script>
+    <script src="services/cartService.js?v=<?= time() ?>"></script>
     <script src="services/ratingService.js"></script>
     <script src="services/userService.js?v=<?= time() ?>"></script>
     <script src="services/wishlistService.js"></script>
@@ -148,24 +151,27 @@
         });
     </script>
 
-    <script src="https://cdn.botpress.cloud/webchat/v1/inject.js"></script>
-    <script>
-        window.botpressWebChat.init({
-            "composerPlaceholder": "Trò chuyện với bot",
-            "botConversationDescription": "Chatbot này được xây dựng cùng với trang website",
-            "botId": "<?= $chatBot['botId'] ?>",
-            "hostUrl": "https://cdn.botpress.cloud/webchat/v1",
-            "messagingUrl": "https://messaging.botpress.cloud",
-            "clientId": "<?= $chatBot['clientId'] ?>",
-            "webhookId": "<?= $chatBot['webhookId'] ?>",
-            "lazySocket": true,
-            "themeName": "prism",
-            "frontendVersion": "v1",
-            "showPoweredBy": false,
-            "theme": "prism",
-            "themeColor": "#2563eb"
-        });
-    </script>
+    <!-- Custom Chatbot UI -->
+    <div id="gemini-chat-widget">
+        <button id="gemini-chat-btn"><i class="fas fa-comment-dots"></i></button>
+        <div id="gemini-chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <h4>Trợ lý ảo AI</h4>
+                    <p>Sẵn sàng giải đáp mọi thắc mắc</p>
+                </div>
+                <button class="chat-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chat-body" id="gemini-chat-body">
+                <div class="chat-msg bot">Xin chào! Tôi có thể giúp gì cho bạn hôm nay?</div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" id="chat-input-text" class="chat-input" placeholder="Nhập tin nhắn...">
+                <button id="chat-send-btn" class="chat-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+    <script src="public/client/js/custom-chatbot.js?v=<?= time() ?>"></script>
 
 
 </body>

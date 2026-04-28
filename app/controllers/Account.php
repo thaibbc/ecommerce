@@ -93,6 +93,7 @@ class Account extends Controller
                         'coupon_id' => $item['coupon_id'],
                         'sub_total' => $item['price'] * $item['quantity'],
                         'payment_method_name' => $item['payment_method_name'],
+                        'payment_transaction_id' => $item['payment_transaction_id'] ?? 0,
                         'attribute_values' => [$item['attribute_value']],
 
                     ];

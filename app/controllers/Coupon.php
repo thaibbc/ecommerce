@@ -14,7 +14,15 @@ class Coupon extends Controller
     function Default()
     {
 
-        $dataCoupon = $this->couponModel->getAllCoupon();
+        $allCoupons = $this->couponModel->getAllCoupon();
+        $dataCoupon = [];
+        if (!empty($allCoupons)) {
+            foreach ($allCoupons as $c) {
+                if ($c['status'] == 1) {
+                    $dataCoupon[] = $c;
+                }
+            }
+        }
 
         $this->view('layoutClient', [
             'title' => 'Ưu đãi dành riêng cho bạn',
@@ -27,10 +35,12 @@ class Coupon extends Controller
 
     function applyCouponApi($code, $totalPrice)
     {
+        $originalPrice = $totalPrice;
         $dataCoupon = $this->couponModel->getOneCouponCode($code);
         // Kiem tra ma giam gia co hop le hay khong
 
-        if (empty($dataCoupon) || $dataCoupon['min_amount'] > $totalPrice || strtotime($dataCoupon['expired']) < time() || $dataCoupon['quantity'] == 0 || $dataCoupon['status'] == 0) {
+        if (empty($dataCoupon) || $dataCoupon['min_amount'] > $totalPrice || strtotime($dataCoupon['expired']) < time() || $dataCoupon['quantity'] == 0) {
+            Logger::log("Áp dụng thất bại mã giảm giá: '$code'", "warning", ['originalPrice' => $originalPrice, 'couponData' => $dataCoupon]);
             echo $this->res->dataApi('400', 'Mã giảm giá đã hết hạn hoặc không phù hợp.', []);
             return;
         }
@@ -44,6 +54,8 @@ class Coupon extends Controller
         } else {
             $totalPrice -= $dataCoupon['value'];
         }
+
+        Logger::log("Áp dụng thành công mã giảm giá: '$code'", "success", ['originalPrice' => $originalPrice, 'finalPrice' => $totalPrice, 'discountValue' => $dataCoupon['value']]);
 
         echo $this->res->dataApi('200', 'Áp dụng mã giảm giá thành công.', [
             'totalPrice' => $totalPrice

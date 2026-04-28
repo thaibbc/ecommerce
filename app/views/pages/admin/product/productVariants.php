@@ -64,6 +64,7 @@
 		                                        <thead>
 		                                            <tr>
 		                                                <th class="product">Kết hợp</th>
+		                                                <th class="product">Hình ảnh</th>
 		                                                <th class="product">Giá</th>
 		                                                <th class="product">Giá khuyễn mãi</th>
 		                                                <th class="quantity">Giảm giá (%)</th>
@@ -83,8 +84,14 @@
                                                         ?>
 		                                                    <tr id="form-input-item-${itemCounter}">
 		                                                        <td>
-		                                                            <input type="hidden" name="attribute[]" value="">
+		                                                            <input type="hidden" name="product_variants_id[]" value="<?= $id ?>">
 		                                                            <input type="text" readonly class="form-control" value="<?= $attribute_values ?>" placeholder="Tên kết hợp">
+		                                                        </td>
+		                                                        <td>
+		                                                            <?php if(!empty($image)): ?>
+		                                                                <img src="<?= $image ?>" alt="image" width="50" class="mb-2 d-block">
+		                                                            <?php endif; ?>
+		                                                            <input type="file" class="form-control" name="image_variant_<?= $id ?>">
 		                                                        </td>
 		                                                        <td>
 

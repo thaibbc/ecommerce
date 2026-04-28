@@ -43,7 +43,7 @@ class OrderModel extends BaseModel
                 os.name AS order_status_name,
                 oi.quantity, oi.price, oi.product_variant_id,
                 av.value_name AS attribute_value,
-                prd.title, prd.thumb, prd.id AS prod_id, prd.slug
+                prd.title, prd.thumb, prd.id AS prod_id, prd.slug, p.payment_transaction_id
             FROM 
                 orders o
             INNER JOIN 

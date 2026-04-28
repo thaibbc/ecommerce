@@ -589,6 +589,7 @@ class Product extends Controller
                         'price' => $item['price'],
                         'quantity' => $item['quantity'],
                         'discount' => $item['discount'],
+                        'image' => $item['image'] ?? '',
                         'attribute_values' => [$item['attribute_value']],
                     ];
                 } else {
@@ -653,11 +654,29 @@ class Product extends Controller
 
 
         foreach ($dataUpdateVariants as $value) {
-            $updateProductVariant = $this->db->findByIdAndUpdate('product_variants', $value['id'], [
+            $updateData = [
                 'quantity' => $value['quantity'],
                 'price' => $value['price'],
                 'discount' => $value['discount'],
-            ]);
+            ];
+
+            if (isset($_FILES['image_variant_' . $value['id']]) && !empty($_FILES['image_variant_' . $value['id']]['name'])) {
+                $imageVariant = [
+                    'name' => $_FILES['image_variant_' . $value['id']]['name'],
+                    'type' => $_FILES['image_variant_' . $value['id']]['type'],
+                    'tmp_name' => $_FILES['image_variant_' . $value['id']]['tmp_name'],
+                    'error' => $_FILES['image_variant_' . $value['id']]['error'],
+                    'size' => $_FILES['image_variant_' . $value['id']]['size'],
+                ];
+                if (Format::validateUploadImage($imageVariant)) {
+                    $urlImageVariant = Services::uploadImageToCloudinary($imageVariant['tmp_name']);
+                    if (!empty($urlImageVariant)) {
+                        $updateData['image'] = $urlImageVariant;
+                    }
+                }
+            }
+
+            $updateProductVariant = $this->db->findByIdAndUpdate('product_variants', $value['id'], $updateData);
             if (!$updateProductVariant) {
                 return $this->res->setToastSession('error', 'Có lỗi trong quá trình cập nhập.', 'admin/product-variants/' . $id);
             }

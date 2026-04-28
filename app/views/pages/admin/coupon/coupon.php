@@ -52,8 +52,17 @@
 											<td><?= $value ?></td>
 											<td><?= Format::formatCurrency($min_amount) ?></td>
 											<td>
-
-												<span class="badge <?= strtotime($expired) < time() ? 'bg-danger' : 'bg-success' ?>"><?= strtotime($expired) < time() ? 'Hết hạn' : 'Công bố' ?></span>
+												<?php
+												if (strtotime($expired) < time()) {
+													echo '<span class="badge bg-danger">Hết hạn</span>';
+												} else {
+													if (isset($status) && $status == 1) {
+														echo '<span class="badge bg-success">Công khai</span>';
+													} else {
+														echo '<span class="badge bg-secondary">Không công khai</span>';
+													}
+												}
+												?>
 											</td>
 											<td>
 												<div class="btn-group" role="group" aria-label="Basic outlined example">

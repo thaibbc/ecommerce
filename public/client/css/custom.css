@@ -517,3 +517,14 @@ body {
   align-items: center;
   color: #777777;
 }
+
+/* Force hide category sidebar on home page by default */
+.category-sidebar {
+    transform: translateX(-100%) !important;
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+}
+.category-sidebar.ec-open {
+    transform: translateX(0) !important;
+}
