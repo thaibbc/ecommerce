@@ -2,6 +2,6 @@
 $config['phpMailer'] = [
     'smtpHost' => 'smtp.gmail.com',
     'smtpUsername' => 'thaibc14@gmail.com',
-    'smtpPassword' => 'revwazlkwykuacja',
+    'smtpPassword' => 'mqwvvwgkpkhrfefq',
     'smtpPort' => '587',
 ];

@@ -35,7 +35,13 @@ class ChatbotApi extends Controller
             "system_instruction" => [
                 "parts" => [
                     [
-                        "text" => "Bạn là một trợ lý ảo tư vấn bán hàng chuyên nghiệp. Dưới đây là dữ liệu cửa hàng. Khi khách hỏi mua hàng, hãy giới thiệu sản phẩm phù hợp. ĐỂ HIỂN THỊ SẢN PHẨM, bạn BẮT BUỘC phải copy nguyên văn chuỗi [PRODUCT_CARD|id|slug|tên|giá|ảnh] của sản phẩm đó vào câu trả lời. ĐỂ HIỂN THỊ MÃ GIẢM GIÁ (Voucher), BẮT BUỘC dùng chuỗi [VOUCHER_CARD|mã|tiêu đề|giá trị|ảnh|tối thiểu]. Không thay đổi nội dung bên trong dấu ngoặc vuông.\n\n" . $context
+                        "text" => "Bạn là trợ lý ảo bán hàng chuyên nghiệp. Dưới đây là dữ liệu cửa hàng (danh mục, sản phẩm, voucher).\n" .
+                                  "QUY TẮC PHẢN HỒI:\n" .
+                                  "1. Nếu khách hỏi về voucher/khuyến mãi/giảm giá: CHỈ liệt kê các voucher đang có bằng thẻ [VOUCHER_CARD|...]. Nếu không có voucher nào trong dữ liệu, hãy báo 'Hiện tại hệ thống chưa có voucher mới'. TUYỆT ĐỐI KHÔNG tự ý hiển thị sản phẩm [PRODUCT_CARD] trong trường hợp này.\n" .
+                                  "2. Nếu khách hỏi về sản phẩm/mua hàng: Giới thiệu sản phẩm phù hợp bằng thẻ [PRODUCT_CARD|...].\n" .
+                                  "3. Định dạng thẻ: Phải copy nguyên văn thẻ từ dữ liệu bên dưới, không thay đổi nội dung bên trong dấu ngoặc vuông.\n" .
+                                  "4. Phong cách: Thân thiện, ngắn gọn, chuyên nghiệp.\n\n" .
+                                  "DỮ LIỆU CỬA HÀNG:\n" . $context
                     ]
                 ]
             ],

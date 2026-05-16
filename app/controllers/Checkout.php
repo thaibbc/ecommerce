@@ -273,6 +273,22 @@ class Checkout extends Controller
             if (!$createOrderItem) {
                 return $this->res->setToastSession('error', 'Đặt hàng thất bại vui lòng thử lại.', 'checkout');
             }
+
+            // Cập nhật số lượng tồn kho và lượt bán ngay khi đặt hàng thành công
+            $product_variant_id = $orderItem['product_variant_id'];
+            $order_quantity = $orderItem['quantity'];
+
+            $dataProductVariant = $this->productModel->getOneProdVariant($product_variant_id);
+
+            // Update luot ban cho san pham
+            $this->productModel->updateProduct($dataProductVariant['prod_id'], [
+                'sold' => $dataProductVariant['sold'] + $order_quantity
+            ]);
+
+            // Update so luong ton kho cho bien the
+            $this->productModel->updateProductVariant($product_variant_id, [
+                'quantity' => $dataProductVariant['variant_quantity'] - $order_quantity
+            ]);
         }
 
 
@@ -391,7 +407,8 @@ class Checkout extends Controller
             return $this->res->setToastSession('error', 'Có lỗi xảy ra vui lòng thử lại', 'my-account');
         }
 
-        if ($dataPost['order_status_id'] == 4) {
+        // Nếu huỷ đơn hàng thì cộng lại số lượng tồn kho và trừ lượt bán
+        if ($dataPost['order_status_id'] == 5) {
             $dataOrderItem = $this->orderModel->getOderItem($dataPost['order_id']);
 
             foreach ($dataOrderItem as $orderItem) {
@@ -399,14 +416,15 @@ class Checkout extends Controller
                 $order_quantity = $orderItem['quantity'];
 
                 $dataProductVariant = $this->productModel->getOneProdVariant($product_variant_id);
-                // Update luot ban
 
+                // Trừ lượt bán cho san pham
                 $this->productModel->updateProduct($dataProductVariant['prod_id'], [
-                    'sold' => $dataProductVariant['sold'] + $order_quantity
+                    'sold' => max(0, $dataProductVariant['sold'] - $order_quantity)
                 ]);
-                // Update so luong da mua
+
+                // Cộng lại so luong ton kho cho bien the
                 $this->productModel->updateProductVariant($product_variant_id, [
-                    'quantity' => $dataProductVariant['variant_quantity'] - $order_quantity
+                    'quantity' => $dataProductVariant['variant_quantity'] + $order_quantity
                 ]);
             }
         }

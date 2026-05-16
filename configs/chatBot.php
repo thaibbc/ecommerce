@@ -1,4 +1,4 @@
 <?php
 $config['chatBot'] = [
-    'geminiApiKey' => 'AIzaSyCpL2rUrfH9bpPd2xi-r5QMBYRNQL9Ecx4',
+    'geminiApiKey' => 'AIzaSyAkkf4qqrk3yl36t8DaDnBmdwM6_MI0v9Y',
 ];

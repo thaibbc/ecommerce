@@ -15,6 +15,7 @@ class Order extends Controller
         $this->req = new Request;
         $this->orderModel = $this->model('OrderModel');
         $this->paymentModel = $this->model('PaymentModel');
+        $this->productModel = $this->model('ProductModel');
     }
 
     private function checkRoleAdmin()
@@ -149,6 +150,27 @@ class Order extends Controller
         ]);
 
         if ($updateStatus) {
+            // Nếu huỷ đơn hàng thì cộng lại số lượng tồn kho và trừ lượt bán
+            if ($dataPost['order_status_id'] == 5) {
+                $dataOrderItem = $this->orderModel->getOderItem($dataPost['order_id']);
+
+                foreach ($dataOrderItem as $orderItem) {
+                    $product_variant_id = $orderItem['product_variant_id'];
+                    $order_quantity = $orderItem['quantity'];
+
+                    $dataProductVariant = $this->productModel->getOneProdVariant($product_variant_id);
+
+                    // Trừ lượt bán cho san pham
+                    $this->productModel->updateProduct($dataProductVariant['prod_id'], [
+                        'sold' => max(0, $dataProductVariant['sold'] - $order_quantity)
+                    ]);
+
+                    // Cộng lại so luong ton kho cho bien the
+                    $this->productModel->updateProductVariant($product_variant_id, [
+                        'quantity' => $dataProductVariant['variant_quantity'] + $order_quantity
+                    ]);
+                }
+            }
             return $this->res->setToastSession('success', 'Bạn đã cập nhập đơn hàng thành công.', 'admin/order-detail/' . $dataPost['idData']);
         } else {
             return $this->res->setToastSession('error', 'Có lỗi xảy ra vui lòng thử lại', 'admin/order-detail/' . $dataPost['idData']);
